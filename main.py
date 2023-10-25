@@ -171,6 +171,7 @@ def initPieces(squares):
 pieces = initPieces(squares) #This is where all of the pieces are stored.
 
 storedSquares = [0] #A list with the currently selected square and the previously selected square.
+currentPlayer = 0 #sets starting player, white to start
 while running:
     # poll for events
     for event in pygame.event.get():
@@ -178,7 +179,7 @@ while running:
             running = False
 
 
-    #This section is used to set the hover color for squares
+    #This section is used to set the hover color for squares, and to select squares.
     for square in squares:
         squareRect = pygame.Rect(square.getPos()[0], square.getPos()[1], 50, 50)
         #Check if mouse over square
@@ -187,26 +188,23 @@ while running:
 
             if squareRect.collidepoint(pygame.mouse.get_pos()): #if you click on a square
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    time.sleep(.1)
-                    print(len(storedSquares))
+                    time.sleep(.3) #Wait to avoid multiclick, this is chess after all
                     if storedSquares[0] != 0: #if there is already a square selected
-                        selectedSquare = square #Maybe store the square you last hovered on?
-                        storedSquares.append(storedSquares[0]) #last square clicked on
-                        storedSquares[0] = selectedSquare
+                        if square.getOccupied() == True:
+                            selectedSquare = square #Maybe store the square you last hovered on?
+                            storedSquares.append(storedSquares[0]) #last square clicked on
+                            storedSquares[0] = selectedSquare
                     else:
-                        storedSquares[0] = square #For first click
-                        print("should have")
+                        if square.getOccupied() == True:
+                            storedSquares[0] = square #For first click
                 
                     storedSquares[0].select()
                     if len(storedSquares) > 1: #if there are two stored squares, one selected and one to unselect
-                        print("reset")
                         storedSquares[1].unselect()
-                        storedSquares[1].resetColor()
                         print(f"stored axis {storedSquares[1].getAxis()}")
                         storedSquares.pop() #forget about old stored square
-
         else:
-            #Reset color once no longer hovering over square
+            #Reset color once no longer hovering over square, or once a square is no longer selected.
             square.resetColor()
         
 
