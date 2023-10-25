@@ -50,6 +50,9 @@ class Square:
         self.piece = piece
         self.occupied = True
 
+    def getPiece(self):
+        return self.piece
+
     def getAxis(self):
         return f"{self.xaxis}{self.yaxis}"
 
@@ -72,6 +75,9 @@ class Piece:
         self.image = pygame.image.load(image)
     def move(self, newSquare): #Move to new square
         self.square = newSquare
+
+    def getTeam(self):
+        return self.team
 
     def die(self): #Unlink the piece from the square
         self.square = None
@@ -171,7 +177,8 @@ def initPieces(squares):
 pieces = initPieces(squares) #This is where all of the pieces are stored.
 
 storedSquares = [0] #A list with the currently selected square and the previously selected square.
-currentPlayer = 0 #sets starting player, white to start
+possibleMoves = []
+currentPlayer = 1 #sets starting player, 1 is white to start, 0 is black.
 while running:
     # poll for events
     for event in pygame.event.get():
@@ -191,12 +198,14 @@ while running:
                     time.sleep(.3) #Wait to avoid multiclick, this is chess after all
                     if storedSquares[0] != 0: #if there is already a square selected
                         if square.getOccupied() == True:
-                            selectedSquare = square #Maybe store the square you last hovered on?
-                            storedSquares.append(storedSquares[0]) #last square clicked on
-                            storedSquares[0] = selectedSquare
+                            if square.getPiece().getTeam() == currentPlayer:
+                                selectedSquare = square #Maybe store the square you last hovered on?
+                                storedSquares.append(storedSquares[0]) #last square clicked on
+                                storedSquares[0] = selectedSquare
                     else:
                         if square.getOccupied() == True:
-                            storedSquares[0] = square #For first click
+                            if square.getPiece().getTeam() == currentPlayer:
+                                storedSquares[0] = square #For first click
                 
                     storedSquares[0].select()
                     if len(storedSquares) > 1: #if there are two stored squares, one selected and one to unselect
@@ -206,7 +215,7 @@ while running:
         else:
             #Reset color once no longer hovering over square, or once a square is no longer selected.
             square.resetColor()
-        
+    
 
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("tan")
