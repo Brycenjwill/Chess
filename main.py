@@ -22,6 +22,7 @@ kings = []
 blackBorder = []
 whiteBorder = []
 allPossibleMoves = []
+check = False
 
 
 #Class for all board squares, used for mouse tracking and display
@@ -594,9 +595,20 @@ def movepiece(currentSquare, futureSquare):
     currentSquare.removePiece()
     currentPiece.pawnMoved()
 
-
+def getCheck(team, allPossibleMoves):
+    if kings[team].getSquare() in allPossibleMoves:
+        check = True
+    else:
+        check = False
+        print("Not a check")
+    return check
     
-    
+def getCheckMate(check, possibleMoves):
+    if len(possibleMoves) == 0:
+        if check == True:
+            return True
+    else:
+        return False
 
 
 #Setting global lists
@@ -613,6 +625,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
 
 
     #This section is used to set the hover color for squares, and to select squares.
@@ -658,6 +671,11 @@ while running:
         else:
             #Reset color once no longer hovering over square, or once a square is no longer selected.
             square.resetColor()
+        if check == True:
+            if storedSquares[0] != kings[currentPlayer].getSquare():
+                storedSquares = [0]
+            storedSquares[0] = kings[currentPlayer].getSquare()
+
     
     #Add logic for deciding which moves a piece can make on any turn, 0 is rook, 1 is knight, 2 is bishop, 3 is queen, 4 is king, 5 is pawn.
     """
@@ -671,11 +689,14 @@ while running:
     
     checking = switchTeams(currentPlayer)
     allPossibleMoves = getAllPossible(checking)
+    check = getCheck(currentPlayer, allPossibleMoves)
+    if check == True:
+        print("CHECK!")
     #blackBorder = kingBorder(1)
     #for square in blackBorder:
         #square.hover()
-    #for possible in allPossibleMoves: #Temporary, delete after testing!!! for displaying all moves that are possible by the other team
-       # possible.hover()
+    for possible in allPossibleMoves: #Temporary, delete after testing!!! for displaying all moves that are possible by the other team
+       possible.hover()
 
 
     #Set colors for possible moves, remove after testing is complete!!!
