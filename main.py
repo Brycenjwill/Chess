@@ -323,7 +323,7 @@ def rookMovement(possibleMoves, team, squares, square, i):
                     break
                 upY = upY - 8
             else:
-                if squares[upY - (8)].getPiece().getTeam() != currentPlayer:
+                if squares[upY - (8)].getPiece().getTeam() != team:
                     targeted.append(squares[upY - (8)])
                 break
             
@@ -338,7 +338,7 @@ def rookMovement(possibleMoves, team, squares, square, i):
                         break
                     downY = downY + 8
                 else:
-                    if squares[downY + (8)].getPiece().getTeam() != currentPlayer:
+                    if squares[downY + (8)].getPiece().getTeam() != team:
                         targeted.append(squares[downY + (8)])
                     break
 
@@ -351,7 +351,7 @@ def rookMovement(possibleMoves, team, squares, square, i):
                         break
                     rightX = rightX + 1
                 else:
-                    if squares[rightX + (1)].getPiece().getTeam() != currentPlayer:
+                    if squares[rightX + (1)].getPiece().getTeam() != team:
                         targeted.append(squares[rightX + (1)])
                     break
     leftX = i
@@ -363,7 +363,7 @@ def rookMovement(possibleMoves, team, squares, square, i):
                         break
                     leftX = leftX - 1
                 else:
-                    if squares[leftX - 1].getPiece().getTeam() != currentPlayer:
+                    if squares[leftX - 1].getPiece().getTeam() != team:
                         targeted.append(squares[leftX - 1])
                     break
     return targeted
@@ -371,6 +371,7 @@ def rookMovement(possibleMoves, team, squares, square, i):
 def bishopMovement(possibleMoves, team, squares, square, i):
     #Check four directions in order.
     targeted = []
+    blocked = [] #For checking check mate and check
     xaxis = square.getAxis()[0] #Get the board location of the piece
     yaxis = square.getAxis()[1]
 #First, check upwards
@@ -386,7 +387,7 @@ def bishopMovement(possibleMoves, team, squares, square, i):
                     else:
                         break
                 else:
-                    if squares[updex - 7].getPiece().getTeam() != currentPlayer:
+                    if squares[updex - 7].getPiece().getTeam() != team:
                         targeted.append(squares[updex - 7])
                     break
             #Try to move up to the left
@@ -400,7 +401,7 @@ def bishopMovement(possibleMoves, team, squares, square, i):
                     else:
                         break
                 else:
-                    if squares[updex - 9].getPiece().getTeam() != currentPlayer:
+                    if squares[updex - 9].getPiece().getTeam() != team:
                         targeted.append(squares[updex - 9])
                     break
 #Last, check downwards
@@ -416,7 +417,7 @@ def bishopMovement(possibleMoves, team, squares, square, i):
                     else:
                         break
                 else:
-                    if squares[downdex + 9].getPiece().getTeam() != currentPlayer:
+                    if squares[downdex + 9].getPiece().getTeam() != team:
                         targeted.append(squares[downdex + 9])
                     break
             #Try to move down to the left
@@ -430,7 +431,7 @@ def bishopMovement(possibleMoves, team, squares, square, i):
                     else:
                         break
                 else:
-                    if squares[downdex + 7].getPiece().getTeam() != currentPlayer:
+                    if squares[downdex + 7].getPiece().getTeam() != team:
                         targeted.append(squares[downdex + 7])
                     break
     return targeted
@@ -451,7 +452,7 @@ def knightMovement(possibleMoves, team, squares, square, i):
                targeted.append(squares[i - 17])
             else:
                 #Add to possible moves if piece in location is on the other team
-                if squares[i - 17].getPiece().getTeam() != currentPlayer:
+                if squares[i - 17].getPiece().getTeam() != team:
                     targeted.append(squares[i - 17])
         #Make sure piece is not on right edge. . .
         if xaxis != "H":
@@ -459,7 +460,7 @@ def knightMovement(possibleMoves, team, squares, square, i):
                targeted.append(squares[i - 15])
             else:
                 #Add to possible moves if piece in location is on the other team
-                if squares[i - 15].getPiece().getTeam() != currentPlayer:
+                if squares[i - 15].getPiece().getTeam() != team:
                     targeted.append(squares[i - 15])
 #Next, try to go 2 downwards. . . 
     #Make sure piece is not on the top edge. . .
@@ -470,7 +471,7 @@ def knightMovement(possibleMoves, team, squares, square, i):
                targeted.append(squares[i + 17])
             else:
                 #Add to possible moves if piece in location is on the other team
-                if squares[i + 17].getPiece().getTeam() != currentPlayer:
+                if squares[i + 17].getPiece().getTeam() != team:
                     targeted.append(squares[i + 17])
         #Make sure piece is not on left edge. . .
         if xaxis != "A":
@@ -478,7 +479,7 @@ def knightMovement(possibleMoves, team, squares, square, i):
                targeted.append(squares[i + 15])
             else:
                 #Add to possible moves if piece in location is on the other team
-                if squares[i + 15].getPiece().getTeam() != currentPlayer:
+                if squares[i + 15].getPiece().getTeam() != team:
                     targeted.append(squares[i + 15])
 #Next, try to go 1 upwards. . .
     if yaxis != 8: #Try to go left
@@ -486,13 +487,13 @@ def knightMovement(possibleMoves, team, squares, square, i):
             if squares[i - 10].getOccupied() == False:
                 targeted.append(squares[i - 10])
             else:
-                if squares[i - 10].getPiece().getTeam() != currentPlayer:
+                if squares[i - 10].getPiece().getTeam() != team:
                     targeted.append(squares[i - 10])
         if xaxis != "G" != xaxis != "H": #Try to go right
             if squares[i - 6].getOccupied() == False:
                 targeted.append(squares[i - 6])
             else:
-                if squares[i - 6].getPiece().getTeam() != currentPlayer:
+                if squares[i - 6].getPiece().getTeam() != team:
                     targeted.append(squares[i - 6])
 #Next, try to go 1 downwards. . .
     if yaxis != 1: #Try to go left
@@ -500,13 +501,13 @@ def knightMovement(possibleMoves, team, squares, square, i):
             if squares[i + 6].getOccupied() == False:
                 targeted.append(squares[i + 6])
             else:
-                if squares[i + 6].getPiece().getTeam() != currentPlayer:
+                if squares[i + 6].getPiece().getTeam() != team:
                     targeted.append(squares[i + 6])
         if xaxis != "G" != xaxis != "H": #Try to go right
             if squares[i + 10].getOccupied() == False:
                 targeted.append(squares[i + 10])
             else:
-                if squares[i + 10].getPiece().getTeam() != currentPlayer:
+                if squares[i + 10].getPiece().getTeam() != team:
                     targeted.append(squares[i + 10])
     return targeted
 
@@ -552,6 +553,7 @@ def checkPossible(checking):
 
 def getAllPossible(checking):
     possible = []
+    
     for i, square in enumerate(squares): #Go through all pieces on opposite team to get all possible attacking list
             if square.getOccupied() == True:
                 if square.getPiece().getTeam() == checking:
@@ -638,7 +640,7 @@ while running:
 
             if squareRect.collidepoint(pygame.mouse.get_pos()): #if you click on a square  #gets stored square
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    time.sleep(.1) #Wait to avoid multiclick, this is chess after all
+                    #time.sleep(.1) #Wait to avoid multiclick, this is chess after all
                     #Check if the square you are mousing over is movable. . .
                     if square in possibleMoves:
                         movepiece(storedSquares[0], square)
@@ -691,7 +693,8 @@ while running:
     allPossibleMoves = getAllPossible(checking)
     check = getCheck(currentPlayer, allPossibleMoves)
     if check == True:
-        print("CHECK!")
+        if len(possibleMoves) < 1:
+            pygame.quit()
     #blackBorder = kingBorder(1)
     #for square in blackBorder:
         #square.hover()
