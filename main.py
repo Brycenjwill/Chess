@@ -11,8 +11,11 @@ import time
 running = True
 WIDTH = 500
 HEIGHT = 600
-WHITE = pygame.Color("#f8f3f1")
-BLACK = pygame.Color("#4e3023")
+WHITE = pygame.Color("#F8F9FA")
+BLACK = pygame.Color("#212529")
+GREEN = pygame.Color("#ADB5BD")
+TAN = pygame.Color("#6C757D")
+
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 clock = pygame.time.Clock()
@@ -23,6 +26,8 @@ blackBorder = []
 whiteBorder = []
 allPossibleMoves = []
 check = False
+font = pygame.font.Font('freesansbold.ttf', 32)
+winner = 3 #Set winner as 3 for logic
 
 
 #Class for all board squares, used for mouse tracking and display
@@ -47,12 +52,12 @@ class Square:
     
     def hover(self):
         #Set hover color
-        self.color = pygame.Color("#00e2e2")
+        self.color = GREEN
 
     def resetColor(self): 
         #Reset color to initial color when not hovering
         if self.selected == True:
-            self.color = pygame.Color("#00e2e2")
+            self.color = GREEN
         else:
             self.color = self.beginColor
 
@@ -602,7 +607,6 @@ def getCheck(team, allPossibleMoves):
         check = True
     else:
         check = False
-        print("Not a check")
     return check
     
 def getCheckMate(check, possibleMoves):
@@ -623,6 +627,13 @@ squaredex = None #Index of currently selected square
 
 #Start Progam. . . 
 while running:
+    if winner != 3:
+        time.sleep(2)
+        pygame.quit()
+        break
+    
+
+
     # poll for events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -635,19 +646,24 @@ while running:
         squareRect = pygame.Rect(square.getPos()[0], square.getPos()[1], 50, 50)
         #Check if mouse over square
         if squareRect.collidepoint(pygame.mouse.get_pos()):
-            square.hover()
-
-
+            
             if squareRect.collidepoint(pygame.mouse.get_pos()): #if you click on a square  #gets stored square
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     #time.sleep(.1) #Wait to avoid multiclick, this is chess after all
                     #Check if the square you are mousing over is movable. . .
                     if square in possibleMoves:
+                        checked = False
+                        if check == True:
+                            checked = True
                         movepiece(storedSquares[0], square)
                         for square in squares: #Reset all board colors
                             square.unselect()
                         storedSquares = [0]
                         possibleMoves = [] #Reset possible moves
+                        if checked == True:
+                            if getCheck(currentPlayer, allPossibleMoves) == True:
+                                #Game over, set winner
+                                winner = switchTeams(currentPlayer)
                         currentPlayer = switchTeams(currentPlayer)
 
 
@@ -673,11 +689,17 @@ while running:
         else:
             #Reset color once no longer hovering over square, or once a square is no longer selected.
             square.resetColor()
+            if check == True:
+                if checkMarkRect.collidepoint(pygame.mouse.get_pos()):
+                    if  event.type == pygame.MOUSEBUTTONDOWN:
+                        winner = switchTeams(currentPlayer)
+            """
+            #This code is to be used once checkmate is added in, without checkmate working it just makes the game unplayable.
         if check == True:
             if storedSquares[0] != kings[currentPlayer].getSquare():
                 storedSquares = [0]
             storedSquares[0] = kings[currentPlayer].getSquare()
-
+            """
     
     #Add logic for deciding which moves a piece can make on any turn, 0 is rook, 1 is knight, 2 is bishop, 3 is queen, 4 is king, 5 is pawn.
     """
@@ -692,14 +714,12 @@ while running:
     checking = switchTeams(currentPlayer)
     allPossibleMoves = getAllPossible(checking)
     check = getCheck(currentPlayer, allPossibleMoves)
-    if check == True:
-        if len(possibleMoves) < 1:
-            pygame.quit()
+    
     #blackBorder = kingBorder(1)
     #for square in blackBorder:
         #square.hover()
-    for possible in allPossibleMoves: #Temporary, delete after testing!!! for displaying all moves that are possible by the other team
-       possible.hover()
+    #for possible in allPossibleMoves: #Temporary, delete after testing!!! for displaying all moves that are possible by the other team
+       #possible.hover()
 
 
     #Set colors for possible moves, remove after testing is complete!!!
@@ -708,7 +728,7 @@ while running:
 
 
     # fill the screen with a color to wipe away anything from last frame
-    screen.fill("tan")
+    screen.fill(TAN)
 
     # RENDER YOUR GAME HERE
     #Draw board squares
@@ -719,9 +739,40 @@ while running:
         if piece.getAlive() == True:
             screen.blit(piece.getImage(), (piece.getSquare().getPos()[0], piece.getSquare().getPos()[1]))
 
-    # flip() the display to put your work on screen
-    pygame.display.flip()
+    if winner != 3:
+        if winner == 1:
+            winner = "White"
+        else:
+            winner = "Black"
+        winnerDisplay = font.render(f'{winner} wins!', True, WHITE, BLACK)
+        screen.blit(winnerDisplay, (160, 530))
+        check = False
 
+    if check == True:
+        checkmateDisplay = font.render(f'Checkmate?', True, WHITE, BLACK)
+        screen.blit(checkmateDisplay, (230, 565))
+        checkMark = font.render('[X]', True, WHITE, BLACK)
+        checkMarkRect = checkMark.get_rect(topleft=(445, 563))
+        screen.blit(checkMark, checkMarkRect)
+        checkDisplay = font.render("Check!", True, WHITE, BLACK)
+        screen.blit(checkDisplay, (190, 50)) 
+    #Player Display
+
+    if currentPlayer == 1:
+        turn = "White"
+    else:
+        turn = "Black"
+
+    turnDisplay = font.render(f'Current turn: {turn}', True, WHITE, BLACK)
+    screen.blit(turnDisplay, (90, 10))
+    # flip() the display to put your work on screen
+
+
+
+        
+
+
+    pygame.display.flip()
     clock.tick(60)  # limits FPS to 60
 
 pygame.quit()
