@@ -154,8 +154,6 @@ def kingBorder(team):
         border.append(squares[index + 8])
     return border
 
-
-
 #Init all of the square objects for the board
 def initSquares():
     squares = []
@@ -255,8 +253,6 @@ def initPieces(squares):
             king = False
         squareIndex += 1
     return pieces
-
-
 #Handle move decision for any pawn piece
 def pawnMovement(possibleMoves, team, squares, square, i):
     targeted = []
@@ -766,11 +762,6 @@ while running:
     turnDisplay = font.render(f'Current turn: {turn}', True, WHITE, BLACK)
     screen.blit(turnDisplay, (90, 10))
     # flip() the display to put your work on screen
-
-
-
-        
-
 
     pygame.display.flip()
     clock.tick(60)  # limits FPS to 60
